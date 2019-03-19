@@ -10,6 +10,8 @@ import Image from './pages/image';
 import Debounce from './pages/debounce';
 import Placeholder from './pages/placeholder';
 import FadeIn from './pages/fadein';
+import Horizontal from './pages/horizontal';
+import Both from './pages/both';
 
 const Home = () => (
   <ul className="nav">
@@ -21,6 +23,8 @@ const Home = () => (
     <li><Link to="/debounce">using <code>debounce</code></Link></li>
     <li><Link to="/placeholder">custom placeholder</Link></li>
     <li><Link to="/fadein">cool <code>fadeIn</code> effect</Link></li>
+    <li><Link to="/horizontal">use horizontal lazyload with <code>&lt;img&gt;</code></Link></li>
+    <li><Link to="/both">both direction with <code>&lt;img&gt;</code></Link></li>
   </ul>
 );
 
@@ -35,6 +39,8 @@ const routes = (
     <Route path="/debounce" component={Debounce} />
     <Route path="/placeholder" component={Placeholder} />
     <Route path="/fadein" component={FadeIn} />
+    <Route path="/horizontal" component={Horizontal} />
+    <Route path="/both" component={Both} />
   </Router>
 );
 

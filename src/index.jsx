@@ -23,8 +23,7 @@ try {
     }
   });
   window.addEventListener('test', null, opts);
-}
-catch (e) { }
+} catch (e) { }
 // if they are supported, setup the optional params
 // IMPORTANT: FALSE doubles as the default CAPTURE value!
 const passiveEvent = passiveEventSupported ? { capture: false, passive: true } : false;
@@ -41,37 +40,47 @@ const checkOverflowVisible = function checkOverflowVisible(component, parent) {
 
   let parentTop;
   let parentHeight;
+  let parentLeft;
+  let parentWidth;
 
   try {
-    ({ top: parentTop, height: parentHeight } = parent.getBoundingClientRect());
+    ({ top: parentTop, height: parentHeight, left: parentLeft, width: parentWidth } = parent.getBoundingClientRect());
   } catch (e) {
-    ({ top: parentTop, height: parentHeight } = defaultBoundingClientRect);
+    ({ top: parentTop, height: parentHeight, left: parentLeft, width: parentWidth } = defaultBoundingClientRect);
   }
 
   const windowInnerHeight = window.innerHeight || document.documentElement.clientHeight;
+  const windowInnerWidth = window.innerWidth || document.documentElement.clientWidth;
 
   // calculate top and height of the intersection of the element's scrollParent and viewport
   const intersectionTop = Math.max(parentTop, 0); // intersection's top relative to viewport
+  const intersectionLeft = Math.max(parentLeft, 0);
   const intersectionHeight = Math.min(windowInnerHeight, parentTop + parentHeight) - intersectionTop; // height
+  const intersectionWidth = Math.min(windowInnerWidth, parentLeft + parentWidth) - intersectionLeft;
 
   // check whether the element is visible in the intersection
   let top;
   let height;
+  let left;
+  let width;
 
   try {
-    ({ top, height } = node.getBoundingClientRect());
+    ({ top, height, left, width } = node.getBoundingClientRect());
   } catch (e) {
-    ({ top, height } = defaultBoundingClientRect);
+    ({ top, height, left, width } = defaultBoundingClientRect);
   }
 
   const offsetTop = top - intersectionTop; // element's top relative to intersection
+  const offsetLeft = left - intersectionLeft; // element's left relative to intersection
 
   const offsets = Array.isArray(component.props.offset) ?
                 component.props.offset :
-                [component.props.offset, component.props.offset]; // Be compatible with previous API
+                [component.props.offset, component.props.offset, component.props.offset, component.props.offset]; // Be compatible with previous API
 
   return (offsetTop - offsets[0] <= intersectionHeight) &&
-         (offsetTop + height + offsets[1] >= 0);
+    (offsetTop + height + offsets[1] >= 0) &&
+    (offsetLeft - offsets[2] <= intersectionWidth) &&
+    (offsetLeft + width + offsets[3] >= 0);
 };
 
 /**
@@ -87,21 +96,26 @@ const checkNormalVisible = function checkNormalVisible(component) {
 
   let top;
   let elementHeight;
+  let left;
+  let elementWidth;
 
   try {
-    ({ top, height: elementHeight } = node.getBoundingClientRect());
+    ({ top, height: elementHeight, left, width: elementWidth } = node.getBoundingClientRect());
   } catch (e) {
-    ({ top, height: elementHeight } = defaultBoundingClientRect);
+    ({ top, height: elementHeight, left, width: elementWidth } = defaultBoundingClientRect);
   }
 
   const windowInnerHeight = window.innerHeight || document.documentElement.clientHeight;
+  const windowInnerWidth = window.innerWidth || document.documentElement.clientWidth;
 
   const offsets = Array.isArray(component.props.offset) ?
                 component.props.offset :
-                [component.props.offset, component.props.offset]; // Be compatible with previous API
+                [component.props.offset, component.props.offset, component.props.offset, component.props.offset]; // Be compatible with previous API
 
   return (top - offsets[0] <= windowInnerHeight) &&
-         (top + elementHeight + offsets[1] >= 0);
+    (top + elementHeight + offsets[1] >= 0) &&
+    (left - offsets[2] <= windowInnerWidth) &&
+    (left + elementWidth + offsets[3] >= 0);
 };
 
 
@@ -273,13 +287,14 @@ class LazyLoad extends Component {
            this.props.children :
              this.props.placeholder ?
                 this.props.placeholder :
-                <div style={{ height: this.props.height }} className="lazyload-placeholder" />;
+                <div style={{ height: this.props.height, width: this.props.width }} className="lazyload-placeholder" />;
   }
 }
 
 LazyLoad.propTypes = {
   once: PropTypes.bool,
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   offset: PropTypes.oneOfType([PropTypes.number, PropTypes.arrayOf(PropTypes.number)]),
   overflow: PropTypes.bool,
   resize: PropTypes.bool,

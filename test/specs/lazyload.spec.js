@@ -31,7 +31,7 @@ afterEach(() => {
 describe('LazyLoad', () => {
   describe('Basic setup', () => {
     it('should render passed children', () => {
-      ReactDOM.render(<LazyLoad><span className="test"></span></LazyLoad>, div);
+      ReactDOM.render(<LazyLoad><span className="test" /></LazyLoad>, div);
       expect(document.querySelector('.test')).to.exist;
     });
 
@@ -121,10 +121,10 @@ describe('LazyLoad', () => {
     it('should render `placeholder` if provided', () => {
       ReactDOM.render(
         <div>
-          <LazyLoad height={9999} placeholder={<div className="my-placeholder" style={{ height: '9999px' }}></div>}>
+          <LazyLoad height={9999} placeholder={<div className="my-placeholder" style={{ height: '9999px' }} />}>
             <Test className="test" />
           </LazyLoad>
-          <LazyLoad height={9999} placeholder={<div className="my-placeholder" style={{ height: '9999px' }}></div>}>
+          <LazyLoad height={9999} placeholder={<div className="my-placeholder" style={{ height: '9999px' }} />}>
             <Test className="test" />
           </LazyLoad>
         </div>, div);
@@ -184,6 +184,31 @@ describe('LazyLoad', () => {
       // expect(container.querySelector('.treasure')).to.not.exist;
 
       container.scrollTop = 200;
+      // since scroll event is throttled, has to wait for a delay to make assertion
+      setTimeout(() => {
+        expect(container.querySelector('.lazyload-placeholder')).to.not.exist;
+        expect(container.querySelector('.treasure')).to.exist;
+        done();
+      }, 500);
+    });
+
+    it('should work inside overflow container', (done) => {
+      ReactDOM.render(
+        <div style={{ height: '200px', width: '200px', overflowX: 'auto', display: 'flex' }} className="container">
+      <LazyLoad height={200} overflow><div style={{ height: '200px', width: '200px', flexShrink: 0 }} className="something">123</div></LazyLoad>
+      <LazyLoad height={200} overflow><div style={{ height: '200px', width: '200px', flexShrink: 0 }} className="something">123</div></LazyLoad>
+      <LazyLoad height={200} overflow><div style={{ height: '200px', width: '200px', flexShrink: 0 }} className="treasure">123</div></LazyLoad>
+    </div>
+      , div);
+
+      const container = document.querySelector('.container');
+      expect(container.querySelector('.something')).to.exist;
+      // tests run well locally, but not on travisci, need to dig it
+      // @FIXME
+      expect(container.querySelector('.lazyload-placeholder')).to.exist;
+      // expect(container.querySelector('.treasure')).to.not.exist;
+
+      container.scrollLeft = 400;
       // since scroll event is throttled, has to wait for a delay to make assertion
       setTimeout(() => {
         expect(container.querySelector('.lazyload-placeholder')).to.not.exist;
@@ -256,17 +281,21 @@ describe('LazyLoad', () => {
       ReactDOM.render(
         <div
           id="scroll-container"
-          style={{ height: '100%', width: '100%', overflow: 'auto' }}>
+          style={{ height: '100%', width: '100%', overflow: 'auto' }}
+        >
           <div
             id="scroller"
-            style={{ height: 10000 }}>
+            style={{ height: 10000 }}
+          >
             <div
               id="spacer"
-              style={{ height: 10000 - 200 }}></div>
+              style={{ height: 10000 - 200 }}
+            />
             <LazyLoad
               height={200}
-              scrollContainer="#scroll-container">
-              <div id="content" style={{ height: 200, width: '100%' }}></div>
+              scrollContainer="#scroll-container"
+            >
+              <div id="content" style={{ height: 200, width: '100%' }} />
             </LazyLoad>
           </div>
         </div>
@@ -278,7 +307,7 @@ describe('LazyLoad', () => {
       $container.scrollTop = $container.scrollHeight - window.innerHeight;
 
       function setStyle(value) {
-        $els.forEach($el => {
+        $els.forEach(($el) => {
           $el.style.height = value;
           $el.style.width = value;
         });

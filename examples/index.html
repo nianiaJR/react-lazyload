@@ -176,6 +176,40 @@ https://github.com/yahoo/pure/blob/master/LICENSE.md
     opacity: 1;
     transition: opacity .5s ease-in;
   }
+  .widget-list-horizon {
+    position: relative;
+    display: flex;
+    width: 500px;
+    overflow: auto;
+    margin-top: 100px;
+  }
+  .widget-list-horizon img {
+    width: 200px;
+    flex-shrink: 0;
+  }
+  .widget-list-horizon .lazyload-placeholder {
+    flex-shrink: 0;
+  }
+  .widget-list-both {
+    margin-top: 100px;
+    position: relative;
+    height: 300px;
+    width: 300px;
+    overflow-y: auto;
+  }
+  .widget-list-both > .lazyload-placeholder {
+    height: 300px;
+  }
+  .widget-list-both li {
+    position: relative;
+    display: flex;
+    overflow-x: auto;
+    height: 301px;
+  }
+  .widget-list-both li img, .widget-list-both li .lazyload-placeholder {
+    width: 200px;
+    flex-shrink: 0;
+  }
   </style>
 </head>
 <body>
